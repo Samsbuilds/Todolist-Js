@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-image: url('background.jpg');
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        h2 {
+            color: #555555;
+            margin-bottom: 15px;
+            font-size: 2em;
+        }
+
+        p {
+            color: #555;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+
+        #taskInput {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border: 2px solid #ddd;
+        }
+
+        #addTaskButton {
+            width: 100%;
+            padding: 15px;
+            background-color: #F2A7D7;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+        }
+
+        #addTaskButton:hover {
+            background-color: #D88FBD;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin-top: 20px;
+        }
+
+        li {
+            display: flex;
+            align-items: center;
+            background-color: #f9f9f9;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        li:hover {
+            transform: scale(1.02);
+        }
+
+        /* Style des cases à cocher rondes */
+        li input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #8e44ad;
+            border-radius: 50%; /* Cercle */
+            appearance: none; /* Supprimer le style par défaut */
+            background-color: transparent;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        li input[type="checkbox"]:checked {
+            background-color: #8e44ad; /* Couleur violette */
+        }
+
+        li input[type="checkbox"]:checked::after {
+            content: "✔";
+            position: absolute;
+            left: 3px;
+            top: 1px;
+            font-size: 16px;
+            color: white;
+        }
+
+        li span {
+            flex-grow: 1;
+            font-size: 1.1em;
+        }
+
+        li.completed {
+            text-decoration: line-through;
+            color: #888;
+        }
+
+        /* Style du message de félicitations */
+        #completionMessage {
+            display: none;
+            background-color: #D88FBD;
+            color: white;
+            padding: 10px;
+            margin-top: 20px;
+            font-size: 1.2em;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2 id="welcomeMessage"></h2>
+        <p id="instructionMessage">What's on your to-do list today? Add it below!</p>
+        <input type="text" id="taskInput" placeholder="Entrez une nouvelle tâche...">
+        <button id="addTaskButton">Ajouter</button>
+        <ul id="taskList"></ul>
+        <!-- Message de félicitations -->
+        <div id="completionMessage">Mission accomplie ! 🎯</div>
+    </div>
+
+    <script>
+        // Récupérer le nom d'utilisateur depuis l'URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const username = urlParams.get('username');
+
+        // Afficher le message de bienvenue
+        const welcomeMessage = document.getElementById('welcomeMessage');
+        welcomeMessage.textContent = `Hello Dear, ${username}`;
+
+        // Fonctionnalité To-Do List
+        const addTaskButton = document.getElementById("addTaskButton");
+        const taskInput = document.getElementById("taskInput");
+        const taskList = document.getElementById("taskList");
+        const completionMessage = document.getElementById("completionMessage");
+
+        function addTask() {
+            const taskText = taskInput.value.trim();
+
+            if (taskText === "") {
+                alert("Veuillez entrer une tâche.");
+                return;
+            }
+
+            const tasks = document.querySelectorAll("#taskList li span");
+            for (let task of tasks) {
+                if (task.textContent.toLowerCase() === taskText.toLowerCase()) {
+                    alert("Cette tâche existe déjà.");
+                    return;
+                }
+            }
+
+            const li = document.createElement("li");
+            const checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+
+            const span = document.createElement("span");
+            span.textContent = taskText;
+
+            checkbox.addEventListener("change", () => {
+                if (checkbox.checked) {
+                    li.classList.add("completed");
+                    // Afficher le message de félicitations après avoir terminé la tâche
+                    completionMessage.style.display = "block";
+                    setTimeout(() => {
+                        completionMessage.style.display = "none";
+                    }, 2000);
+                } else {
+                    li.classList.remove("completed");
+                }
+            });
+
+            li.appendChild(checkbox);
+            li.appendChild(span);
+            taskList.appendChild(li);
+            taskInput.value = "";
+        }
+
+        addTaskButton.addEventListener("click", addTask);
+        taskInput.addEventListener("keypress", (e) => {
+            if (e.key === "Enter") {
+                addTask();
+            }
+        });
+    </script>
+
+</body>
+</html>
